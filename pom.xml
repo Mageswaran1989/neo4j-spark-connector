@@ -5,7 +5,8 @@
     <groupId>org.neo4j.spark</groupId>
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
-    <artifactId>neo4j-spark-connector_${scala.version.suffix}</artifactId>
+    <!--<artifactId>neo4j-spark-connector_${scala.version.suffix}</artifactId>-->
+    <artifactId>neo4j-spark-connector</artifactId>
     <name>neo4j-spark-connector</name>
 
     <url>https://github.com/neo4j-contrib/neo4j-spark-connector</url>

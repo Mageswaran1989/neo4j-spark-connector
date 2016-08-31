@@ -1,6 +1,6 @@
-# Neo4j-Spark-Connector based on Neo4j 3.0's Bolt protocol
+# Neo4j Connector to Apache Spark based on Neo4j 3.0's Bolt protocol
 
-These are the beginnings of a Neo4j-Spark-Connector using the new binary protocol for Neo4j, Bolt.
+These are the beginnings of a Connector from Neo4j to Apache Spark using the new binary protocol for Neo4j, Bolt.
 
 Find [more information](http://neo4j.com/docs/developer-manual/current/#driver-manual-index) about the Bolt protocol, available drivers and documentation.
 
@@ -27,7 +27,7 @@ Build `target/neo4j-spark-connector_2.11-full-1.0.0-RC1.jar` for Scala 2.11
     mvn clean install assembly:single
 
 
-## Integration with Spark Applications
+## Integration with Apache Spark Applications
 
 **spark-shell, pyspark, or spark-submit**
 
@@ -101,7 +101,7 @@ There are a few different RDD's all named `Neo4jXxxRDD`
 
 ## Graph Frames
 
-[GraphFrames](http://graphframes.github.io/) ([Spark Packages](http://spark-packages.org/package/graphframes/graphframes)) are a new Spark API to process graph data.
+[GraphFrames](http://graphframes.github.io/) ([Spark Packages](http://spark-packages.org/package/graphframes/graphframes)) are a new Apache Spark API to process graph data.
 
 It is similar and based on DataFrames, you can create GraphFrames from DataFrames and also from GraphX graphs.
 
@@ -224,12 +224,12 @@ You can also provide the dependencies to spark-shell or spark-submit via `--pack
 
 ### Neo4jGraphFrame
 
-GraphFrames are a new Spark API to process graph data.
+GraphFrames are a new Apache Spark API to process graph data.
 
 It is similar and based on DataFrames, you can create GraphFrames from DataFrames and also from GraphX graphs.
 
 
-There was a first release (0.1.0) of GraphFrames which is only available for Scala 2.10 which is available on the [Maven repository for Spark Packages](http://dl.bintray.com/spark-packages/maven/graphframes/graphframes).
+There was a first release (0.1.0) of GraphFrames which is only available for Scala 2.10 which is available on the [Maven repository for Apache Spark Packages](http://dl.bintray.com/spark-packages/maven/graphframes/graphframes).
 
 Resources:
 
@@ -292,7 +292,7 @@ Resources:
 
 You can also [build it yourself](https://github.com/graphframes/graphframes) or pull the [Spark 1.6 jar from the Spark Packages page](http://spark-packages.org/package/graphframes/graphframes).
 
-To build the `neo4j-spark-connector with GraphFrames support build and install GraphFrames locally with:
+To build the `neo4j-spark-connector` with GraphFrames support build and install GraphFrames locally with:
 
 
     git clone https://github.com/graphframes/graphframes

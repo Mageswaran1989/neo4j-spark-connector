@@ -68,6 +68,7 @@ public class Neo4jDataFrameTest {
         assertEquals(1999L, row.getLong(0));
         assertEquals("Welcome to the Real World", row.getString(1));
     }
+
     @Test
     @Ignore("todo result & session not serializable for CypherResultRDD")
     public void runMatrixQueryDF() {

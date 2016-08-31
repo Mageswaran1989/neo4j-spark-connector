@@ -1,9 +1,11 @@
 package org.neo4j.spark
 
+import java.util
+
 import org.apache.spark._
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.types.{DataType, StructField, StructType}
-import org.apache.spark.sql.{Row, SQLContext, types}
+import org.apache.spark.sql.{Column, DataFrame, Row, SQLContext, types}
 import org.neo4j.driver.internal.types.InternalTypeSystem
 import org.neo4j.driver.v1._
 import org.neo4j.driver.v1.types.{Type, TypeSystem}
@@ -12,6 +14,34 @@ import scala.collection.JavaConverters._
 
 object Neo4jDataFrame {
 
+  def mergeEdgeList(sc: SparkContext, dataFrame: DataFrame, source: (String,Seq[String]), relationship: (String,Seq[String]), target: (String,Seq[String])): Unit = {
+    val mergeStatement = s"""
+      UNWIND {rows} as row
+      MERGE (source:`${source._1}` {`${source._2.head}` : row.source.`${source._2.head}`}) ON CREATE SET source += row.source
+      MERGE (target:`${target._1}` {`${target._2.head}` : row.target.`${target._2.head}`}) ON CREATE SET target += row.target
+      MERGE (source)-[rel:`${relationship._1}`]->(target) ON CREATE SET rel += row.relationship
+      """
+    val partitions = Math.max(1,(dataFrame.count() / 10000).asInstanceOf[Int])
+    val config = Neo4jConfig(sc.getConf)
+    dataFrame.repartition(partitions).foreachPartition( rows => {
+      val params: AnyRef = rows.map(r =>
+        Map(
+          "source" -> source._2.map( c => (c, r.getAs[AnyRef](c))).toMap.asJava,
+          "target" -> target._2.map( c => (c, r.getAs[AnyRef](c))).toMap.asJava,
+          "relationship" -> relationship._2.map( c => (c, r.getAs[AnyRef](c))).toMap.asJava)
+          .asJava).asJava
+          execute(config, mergeStatement, Map("rows" -> params).asJava)
+    })
+  }
+
+  def execute(config : Neo4jConfig, query: String, parameters: java.util.Map[String, AnyRef]) = {
+    val driver: Driver = config.driver()
+    val session = driver.session()
+
+    session.run(query,parameters).consume()
+    session.close()
+    driver.close()
+  }
   def schemaFromNamedType(schemaInfo: Seq[(String, String)]) = {
     val fields = schemaInfo.map(field =>
       StructField(field._1, CypherType(field._2), nullable = true) )

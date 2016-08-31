@@ -2,13 +2,17 @@ package org.neo4j.spark;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.graphx.Edge;
 import org.apache.spark.graphx.Graph;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.neo4j.harness.ServerControls;
 import org.neo4j.harness.TestServerBuilders;
+import scala.Function1;
+import scala.Tuple2;
 import scala.collection.Seq$;
+import scala.reflect.ClassTag$;
 
 import static org.junit.Assert.assertEquals;
 
@@ -51,5 +55,4 @@ public class Neo4jGraphTest {
         assertEquals(2,graph.vertices().count());
         assertEquals(1,graph.edges().count());
     }
-
 }

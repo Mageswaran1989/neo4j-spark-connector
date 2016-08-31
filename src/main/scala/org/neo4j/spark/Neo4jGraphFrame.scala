@@ -12,7 +12,7 @@ object Neo4jGraphFrame {
 
     def apply(sqlContext:SQLContext, src:(String,String), edge : (String,String), dst:(String,String)) = {
       def nodeStmt(s : (String,String)) = s"MATCH (n:${s._1}) RETURN id(n) as id, n.${s._2} as prop"
-      val edgeProp = if (edge._2 == null) "" else ", r.${edge._2} as prop"
+      val edgeProp = if (edge._2 == null) "" else s", r.${edge._2} as prop"
       val edgeStmt = s"MATCH (n:${src._1})-[r:${edge._1}]->(m:${dst._1}) RETURN id(n) as src, id(m) as dst" +edgeProp
 
       val vertices1 = Neo4jDataFrame(sqlContext, nodeStmt(src),Seq.empty,("id","integer"),("prop","string"))

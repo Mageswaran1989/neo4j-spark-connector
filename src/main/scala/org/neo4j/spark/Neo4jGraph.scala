@@ -85,7 +85,7 @@ object Neo4jGraph {
 
         graph.edges.repartition(batchSize).mapPartitions[Long](
           p => {
-            val rows = p.map(e => Seq(("from", e.srcId), ("to", e.dstId), ("value", e.attr))).toList.asJava
+            val rows = p.map(e => Seq(("from", e.srcId), ("to", e.dstId), ("value", e.attr)).toMap.asJava).toList.asJava
             val res1 = execute(config, updateRels, Seq(("data", rows))).rows
             val sum : Long = res1.map(x => x(0).asInstanceOf[Long]).sum
             Iterator.apply[Long](sum)
@@ -103,7 +103,7 @@ object Neo4jGraph {
     val session = driver.session()
 
     val result = session.run(query, parameters.toMap.asJava)
-    if (!result.hasNext()) {
+    if (!result.hasNext) {
       session.close()
       driver.close()
       return new CypherResult(Vector.empty, Iterator.empty)
@@ -112,20 +112,27 @@ object Neo4jGraph {
     val keyCount = peek.size()
     val keys = peek.keys().asScala
 
-    val it = result.asScala.map((record) => { keyCount match {
-      case 0 => Array.empty[Any]
-      case 1 => Array(record.get(0).asObject())
-      case 2 => Array(record.get(0).asObject(), record.get(1).asObject())
-      case 3 => Array(record.get(0).asObject(), record.get(1).asObject(), record.get(2).asObject())
-      case _ =>
-        val array = new Array[Any](keyCount)
-        var i = 0
-        while (i < keyCount) {
-          array.update(i, record.get(i).asObject())
-          i = i + 1
-        }
-        array
-    }})
+    val it = result.asScala.map((record) => {
+      val res = keyCount match {
+        case 0 => Array.empty[Any]
+        case 1 => Array(record.get(0).asObject())
+        case 2 => Array(record.get(0).asObject(), record.get(1).asObject())
+        case 3 => Array(record.get(0).asObject(), record.get(1).asObject(), record.get(2).asObject())
+        case _ =>
+          val array = new Array[Any](keyCount)
+          var i = 0
+          while (i < keyCount) {
+            array.update(i, record.get(i).asObject())
+            i = i + 1
+          }
+          array
+      }
+      if (!result.hasNext) {
+        session.close()
+        driver.close()
+      }
+      res
+    })
     new CypherResult(result.keys().asScala.toVector, it)
   }
 }
